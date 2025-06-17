@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>软件下载 - 私人的软件导航</title>
+<!-- 引入Font Awesome图标库 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- 引入自定义样式 -->
+<link rel="stylesheet" href="software.css">
+</head>
+<body>
+<header id="header-placeholder"></header>
+<script>
+// 加载头部
+fetch('header.html')
+    .then(response => response.text())
+    .then(data => {
+    document.getElementById('header-placeholder').innerHTML = data;
+    });
+</script>
+
+<header>
+    <div class="header-content">
+        <div class="logo">软仓</div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="搜索软件...">
+        </div>
+    </div>
+</header>
+
+<nav>
+    <div class="categories">
+        <button class="category-btn active" data-category="all">全部</button>
+        <button class="category-btn" data-category="Adobe">Adobe</button>
+        <button class="category-btn" data-category="CAD">CAD</button>
+        <button class="category-btn" data-category="三维设计">三维设计</button>
+        <button class="category-btn" data-category="图像处理">图像处理</button>
+        <button class="category-btn" data-category="建筑设计">建筑设计</button>
+        <button class="category-btn" data-category="影视动画">影视动画</button>
+        <button class="category-btn" data-category="数据分析">数据分析</button>
+        <button class="category-btn" data-category="机械设计">机械设计</button>
+        <button class="category-btn" data-category="电子电路">电子电路</button>
+    </div>
+</nav>
+
+<main>
+    <div class="software-grid" id="software-container">
+        <!-- 软件卡片将通过JavaScript动态生成 -->
+    </div>
+</main>
+
+<!-- 下载弹窗 -->
+<div class="modal" id="downloadModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle"></h2>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="software-info">
+                <i id="modalIcon" class="software-icon fas"></i>
+                <p id="modalDesc" class="modal-desc"></p>
+            </div>
+            <div class="download-links">
+                <a id="officialLink" href="#" target="_blank" class="download-btn official-btn">
+                    <i class="fas fa-globe"></i>
+                    官方网站下载
+                </a>
+                <a id="cloudLink" href="#" target="_blank" class="download-btn cloud-btn">
+                    <i class="fas fa-cloud-download-alt"></i>
+                    网盘下载
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 软件下载 - 私人的软件导航 | 收集整理各类常用工作软件</p>
+</footer>
+
+<!-- 引入JavaScript -->
+<script src="software.js"></script>
+</body>
+</html>
