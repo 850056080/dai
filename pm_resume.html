@@ -4,236 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>代宇航 - 项目经理简历</title>
-<style>
-:root {
-    --primary-color: #75a3e1;
-    --secondary-color: #4285f4;
-    --text-color: #333;
-    --light-text: #666;
-    --background-color: #fff;
-    --light-bg: #f8f9fa;
-    --border-color: #eaeaea;
-    --accent-color: #ffde7c;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--background-color);
-    padding: 0;
-    margin: 0;
-}
-
-.resume-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--background-color);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-}
-
-@media (min-width: 768px) {
-    .resume-container {
-        flex-direction: row;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
-    }
-}
-
-.sidebar {
-    flex: 0 0 300px;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 30px;
-    margin-bottom: 20px;
-}
-
-@media (min-width: 768px) {
-    .sidebar {
-        margin-bottom: 0;
-        margin-right: 20px;
-    }
-}
-
-.main-content {
-    flex: 1;
-    padding: 30px;
-}
-figure{padding: 20% 45% 10% 0;}
-figure img{border-radius: 10px;overflow: hidden;}
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    font-weight: 700;
-}
-
-h2 {
-    font-size: 1.5rem;
-    margin: 25px 0 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--primary-color);
-    color: var(--primary-color);
-}
-
-h3 {
-    font-size: 1.2rem;
-    margin: 15px 0 10px;
-    color: white;
-}
-
-p {
-    margin-bottom: 15px;
-}
-
-.info-item {
-    display: flex;
-    margin-bottom: 10px;
-    align-items: center;
-}
-
-.info-item i {
-    width: 25px;
-    text-align: center;
-    margin-right: 10px;
-}
-
-.tag {
-    display: inline-block;
-    background-color: var(--light-bg);
-    color: var(--primary-color);
-    padding: 4px 10px;
-    border: 1px solid var(--primary-color);
-    border-radius: 15px;
-    font-size: 0.85rem;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    cursor: pointer;
-}
-
-.experience {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.experience:last-child {
-    border-bottom: none;
-}
-
-.company {
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.position-date {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.position {
-    font-weight: 600;
-    color: var(--secondary-color);
-}
-
-.date {
-    color: var(--light-text);
-    font-size: 0.9rem;
-}
-
-.achievements {
-    list-style-type: none;
-    margin-left: 20px;
-    margin-top: 10px;
-}
-
-.achievements li {
-    position: relative;
-    padding-left: 25px;
-    margin-bottom: 8px;
-}
-
-.achievements li:before {
-    content: "•";
-    color: var(--accent-color);
-    position: absolute;
-    left: 0;
-    font-weight: bold;
-}
-
-.skills-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.project {
-    margin-bottom: 15px;
-    padding: 15px 15px 5px;
-    
-    background-color: var(--light-bg);
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-}
-
-.project:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-.project h3{color:#0d62d0;margin:0 0 10px 0;}
-.education {
-    display: flex;
-    margin-bottom: 15px;
-}
-
-.edu-year {
-    flex: 0 0 120px;
-    color: var(--light-text);
-    font-size: 0.9rem;
-}
-
-.edu-info {
-    flex: 1;
-}
-
-.download-btn {
-    display: inline-block;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    margin-top: 20px;
-    transition: background-color 0.3s ease;
-}
-
-.download-btn:hover {
-    background-color: #0d62d0;
-}
-
-.highlight {
-    color: var(--accent-color);
-    font-weight: 600;
-}
-
-.divider {
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 20px 0;
-}
-</style>
+<link rel="stylesheet" href="pm_resume.css">
 </head>
 <body>
+<header id="header-placeholder"></header>
+<script>
+// 加载头部
+fetch('header.html')
+    .then(response => response.text())
+    .then(data => {
+    document.getElementById('header-placeholder').innerHTML = data;
+    });
+</script>
 <div class="resume-container">
 <aside class="sidebar">
     <figure>
@@ -382,13 +164,38 @@ p {
         <p>主导智慧车站管理平台的需求分析与项目管理，对接车站运营方与技术团队。</p>
         <p><strong>成果：</strong>实现车站设备智能监控、客流分析等功能，为智慧车站建设奠定基础。</p>
     </div>
-    
     <div class="project">
-        <h3>湘南校友会小程序</h3>
-        <p>从需求分析到上线全程管理，打造校友社交与资源对接平台。</p>
-        <p><strong>成果：</strong>上线3个月注册用户突破5000人，日均活跃用户800+，成为区域标杆校友平台。</p>
+        <h3>上海教委协同管平台</h3>
+        <p>项目描述</p>
+        <p><strong>成果：</strong>工作内容</p>
     </div>
     
+    <div class="project">
+        <h3>中国极地研究中心</h3>
+        <p>项目描述</p>
+        <p><strong>成果：</strong>工作内容</p>
+    </div>
+    
+    <div class="project">
+        <h3>旭洁威特 Vector Optics ERP - https://erp.vectoroptics.cn/</h3>
+        <p>项目描述</p>
+        <p><strong>成果：</strong>工作内容</p>
+    </div>
+    <div class="project">
+        <h3>富士胶片工单分发系统</h3>
+        <p>项目描述</p>
+        <p><strong>成果：</strong>工作内容</p>
+    </div>
+    <div class="project">
+        <h3>中龙安保APP</h3>
+        <p>项目描述</p>
+        <p><strong>成果：</strong>工作内容</p>
+    </div>
+    <div class="project">
+        <h3>传恒债权管理</h3>
+        <p>项目描述</p>
+        <p><strong>成果：</strong>工作内容</p>
+    </div>
     <div class="project">
         <h3>乐塑3D企业官网</h3>
         <p>负责官网的UI设计与项目管理，打造3D打印行业领先的品牌形象。</p>
