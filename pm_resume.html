@@ -5,17 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>代宇航 - 项目经理简历</title>
 <link rel="stylesheet" href="pm_resume.css">
+<style>
+nav {position: fixed;top: 0;left: 0;width: 100%;
+background-color: var(--primary-color);z-index: 1000;}
+nav ul {list-style: none;margin: 0;padding: 0;display: flex;justify-content: center;}
+nav ul li {padding: 0 15px;}
+nav a {color: white;text-decoration: none;font-size: 16px;transition: color 0.3s;line-height: 50px;}
+nav a:hover {color: var(--accent-color);}
+</style>
 </head>
 <body>
-<header id="header-placeholder"></header>
-<script>
-// 加载头部
-fetch('header.html')
-    .then(response => response.text())
-    .then(data => {
-    document.getElementById('header-placeholder').innerHTML = data;
-    });
-</script>
+<header id="header-placeholder">
+<nav>
+    <ul>
+        <li><a href="pm_resume.html">在线简历</a></li>
+        <li><a href="download.html">简历下载</a></li>
+        <li><a href="bodyweb.html">宝藏网站</a></li>
+        <li><a href="software.html">软件下载</a></li>
+        <li><a href="aibox.html">AI工具箱</a></li>
+    </ul>
+</nav>
+</header>
+
 <div class="resume-container">
 <aside class="sidebar">
     <figure>
