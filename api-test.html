@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API接口测试页面</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .api-section {
+            margin-bottom: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .api-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .api-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+        
+        .api-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            height: 200px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-clear {
+            background: #6c757d;
+        }
+        
+        .btn-clear:hover {
+            background: #5a6268;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+        }
+        
+        .response-section {
+            margin-top: 20px;
+        }
+        
+        .response-header {
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 4px 4px 0 0;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .response-body {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            padding: 15px;
+            border-radius: 0 0 4px 4px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .response-body pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status-success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .api-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .api-info strong {
+            color: #1976d2;
+        }
+        
+        .cors-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+            color: #856404;
+        }
+        
+        .cors-warning strong {
+            color: #b45309;
+        }
+        
+        .solution-box {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        
+        .solution-box h4 {
+            margin-top: 0;
+            color: #0c5460;
+        }
+        
+        .solution-box ul {
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 API接口测试工具</h1>
+            <p>测试海报图片和模板数据接口</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- CORS警告提示 -->
+            <div class="cors-warning">
+                <strong>⚠️ 跨域请求提示:</strong><br>
+                由于浏览器的CORS（跨域资源共享）安全策略，直接从网页发起跨域请求可能会失败。<br>
+                如果遇到"Failed to fetch"错误，请参考下方的解决方案。
+                <div class="solution-box">
+                    <h4>🔧 解决方案:</h4>
+                    <ul>
+                        <li><strong>方案1:</strong> 使用浏览器扩展（如CORS Unblock）临时禁用CORS检查</li>
+                        <li><strong>方案2:</strong> 使用Postman、Insomnia等API测试工具</li>
+                        <li><strong>方案3:</strong> 通过后端代理服务器转发请求</li>
+                        <li><strong>方案4:</strong> 启动Chrome时添加参数：--disable-web-security --user-data-dir</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 查询图片接口 -->
+            <div class="api-section">
+                <div class="api-header">
+                    <h2>📸 查询图片接口</h2>
+                </div>
+                <div class="api-body">
+                    <div class="api-info">
+                        <strong>接口地址:</strong> https://hkb.htpsoftai.com/api/si/inboundCallStd<br>
+                        <strong>请求方式:</strong> POST<br>
+                        <strong>数据集:</strong> HAIBAO_TUPIAN
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imageApiUrl">API地址:</label>
+                        <input type="text" id="imageApiUrl" value="https://hkb.htpsoftai.com/api/si/inboundCallStd">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imageRequestBody">请求参数 (JSON):</label>
+                        <textarea id="imageRequestBody">{
+    "code": "bzDMDataList",
+    "appKey": "ana_cli_cba18457b6",
+    "appSecret": "q5YZETccYxcBA7AL9izBsftEB4zXIhcz",
+    "detail": {
+        "set": "HAIBAO_TUPIAN",
+        "filters": []
+    }
+}</textarea>
+                    </div>
+                    
+                    <button class="btn" onclick="callImageApi()">🚀 发送请求</button>
+                    <button class="btn btn-clear" onclick="clearImageResponse()">🗑️ 清空结果</button>
+                    
+                    <div class="loading" id="imageLoading">正在请求中...</div>
+                    
+                    <div class="response-section" id="imageResponseSection" style="display: none;">
+                        <div class="response-header">
+                            响应结果 <span id="imageStatus"></span>
+                        </div>
+                        <div class="response-body">
+                            <pre id="imageResponse"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 查询模板接口 -->
+            <div class="api-section">
+                <div class="api-header">
+                    <h2>📋 查询模板接口</h2>
+                </div>
+                <div class="api-body">
+                    <div class="api-info">
+                        <strong>接口地址:</strong> https://hkb.htpsoftai.com/api/si/inboundCallStd<br>
+                        <strong>请求方式:</strong> POST<br>
+                        <strong>数据集:</strong> HAIBAO_PUBLIC_TEMPLATE
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="templateApiUrl">API地址:</label>
+                        <input type="text" id="templateApiUrl" value="https://hkb.htpsoftai.com/api/si/inboundCallStd">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="templateRequestBody">请求参数 (JSON):</label>
+                        <textarea id="templateRequestBody">{
+    "code": "bzDMDataList",
+    "appKey": "ana_cli_cba18457b6",
+    "appSecret": "q5YZETccYxcBA7AL9izBsftEB4zXIhcz",
+    "detail": {
+        "set": "HAIBAO_PUBLIC_TEMPLATE",
+        "filters": []
+    }
+}</textarea>
+                    </div>
+                    
+                    <button class="btn" onclick="callTemplateApi()">🚀 发送请求</button>
+                    <button class="btn btn-clear" onclick="clearTemplateResponse()">🗑️ 清空结果</button>
+                    
+                    <div class="loading" id="templateLoading">正在请求中...</div>
+                    
+                    <div class="response-section" id="templateResponseSection" style="display: none;">
+                        <div class="response-header">
+                            响应结果 <span id="templateStatus"></span>
+                        </div>
+                        <div class="response-body">
+                            <pre id="templateResponse"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 查询图片接口
+        async function callImageApi() {
+            const url = document.getElementById('imageApiUrl').value;
+            const requestBody = document.getElementById('imageRequestBody').value;
+            const loading = document.getElementById('imageLoading');
+            const responseSection = document.getElementById('imageResponseSection');
+            const responseElement = document.getElementById('imageResponse');
+            const statusElement = document.getElementById('imageStatus');
+            
+            // 显示加载状态
+            loading.style.display = 'block';
+            responseSection.style.display = 'none';
+            
+            try {
+                // 验证JSON格式
+                const jsonData = JSON.parse(requestBody);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: requestBody
+                });
+                
+                const responseData = await response.json();
+                
+                // 隐藏加载状态
+                loading.style.display = 'none';
+                
+                // 显示响应结果
+                responseSection.style.display = 'block';
+                responseElement.textContent = JSON.stringify(responseData, null, 2);
+                
+                // 设置状态
+                if (response.ok) {
+                    statusElement.textContent = `(${response.status} - 成功)`;
+                    statusElement.className = 'status-success';
+                } else {
+                    statusElement.textContent = `(${response.status} - 错误)`;
+                    statusElement.className = 'status-error';
+                }
+                
+            } catch (error) {
+                loading.style.display = 'none';
+                responseSection.style.display = 'block';
+                
+                let errorMessage = `请求失败: ${error.message}`;
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage += `\n\n🔍 可能的原因:\n1. CORS跨域限制\n2. 网络连接问题\n3. 服务器不可达\n\n💡 建议解决方案:\n- 使用Postman等API测试工具\n- 通过后端代理转发请求\n- 使用浏览器CORS扩展`;
+                }
+                
+                responseElement.textContent = errorMessage;
+                statusElement.textContent = '(请求错误)';
+                statusElement.className = 'status-error';
+            }
+        }
+        
+        // 查询模板接口
+        async function callTemplateApi() {
+            const url = document.getElementById('templateApiUrl').value;
+            const requestBody = document.getElementById('templateRequestBody').value;
+            const loading = document.getElementById('templateLoading');
+            const responseSection = document.getElementById('templateResponseSection');
+            const responseElement = document.getElementById('templateResponse');
+            const statusElement = document.getElementById('templateStatus');
+            
+            // 显示加载状态
+            loading.style.display = 'block';
+            responseSection.style.display = 'none';
+            
+            try {
+                // 验证JSON格式
+                const jsonData = JSON.parse(requestBody);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: requestBody
+                });
+                
+                const responseData = await response.json();
+                
+                // 隐藏加载状态
+                loading.style.display = 'none';
+                
+                // 显示响应结果
+                responseSection.style.display = 'block';
+                responseElement.textContent = JSON.stringify(responseData, null, 2);
+                
+                // 设置状态
+                if (response.ok) {
+                    statusElement.textContent = `(${response.status} - 成功)`;
+                    statusElement.className = 'status-success';
+                } else {
+                    statusElement.textContent = `(${response.status} - 错误)`;
+                    statusElement.className = 'status-error';
+                }
+                
+            } catch (error) {
+                loading.style.display = 'none';
+                responseSection.style.display = 'block';
+                
+                let errorMessage = `请求失败: ${error.message}`;
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage += `\n\n🔍 可能的原因:\n1. CORS跨域限制\n2. 网络连接问题\n3. 服务器不可达\n\n💡 建议解决方案:\n- 使用Postman等API测试工具\n- 通过后端代理转发请求\n- 使用浏览器CORS扩展`;
+                }
+                
+                responseElement.textContent = errorMessage;
+                statusElement.textContent = '(请求错误)';
+                statusElement.className = 'status-error';
+            }
+        }
+        
+        // 清空图片接口响应
+        function clearImageResponse() {
+            document.getElementById('imageResponseSection').style.display = 'none';
+            document.getElementById('imageResponse').textContent = '';
+            document.getElementById('imageLoading').style.display = 'none';
+        }
+        
+        // 清空模板接口响应
+        function clearTemplateResponse() {
+            document.getElementById('templateResponseSection').style.display = 'none';
+            document.getElementById('templateResponse').textContent = '';
+            document.getElementById('templateLoading').style.display = 'none';
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('API测试页面已加载完成');
+        });
+    </script>
+</body>
+</html>
