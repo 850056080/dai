@@ -2,13 +2,13 @@
   <div class="cases-container">
     <!-- Banner区域 -->
     <div class="banner-section">
-      <img src="/img/cases_banner.png" alt="项目展示" class="banner-image" />
+      <img :src="withBase('img/cases_banner.png')" alt="项目展示" class="banner-image" />
     </div>
 
     <!-- 个人信息区域 -->
     <div class="profile-section">
       <div class="profile-header">
-        <img src="/img/cases_myphoto.png" alt="个人头像" class="profile-avatar" />
+        <img :src="withBase('img/cases_myphoto.png')" alt="个人头像" class="profile-avatar" />
         <div class="profile-info">
           <h1 class="profile-name">Dom代宇航</h1>
           <p class="profile-title">上海 | 项目经理</p>
@@ -50,22 +50,22 @@
       <div class="project-row column2">
         <div class="project-item">
           <a href="https://www.basf.com/cn/zh.html" target="_blank" class="project-link">巴斯夫网站 >></a>
-          <img src="/img/cases_l10.jpg" alt="巴斯夫网站" class="project-image" />
+          <img :src="withBase('img/cases_l10.jpg')" alt="巴斯夫网站" class="project-image" />
         </div>
         <div class="project-item">
           <a href="https://www.lesu3d.com/" target="_blank" class="project-link">乐塑3D >></a>
-          <img src="/img/cases_l9.jpg" alt="乐塑3D" class="project-image" />
+          <img :src="withBase('img/cases_l9.jpg')" alt="乐塑3D" class="project-image" />
         </div>
       </div>
       
       <div class="project-row column2">
         <div class="project-item">
           <span class="project-label">匠制堂手机网站</span>
-          <img src="/img/cases_l6.jpg" alt="匠制堂手机网站" class="project-image" />
+          <img :src="withBase('img/cases_l6.jpg')" alt="匠制堂手机网站" class="project-image" />
         </div>
         <div class="project-item">
           <span class="project-label">比赛报名手机网站</span>
-          <img src="/img/cases_l11.jpg" alt="比赛报名手机网站" class="project-image" />
+          <img :src="withBase('img/cases_l11.jpg')" alt="比赛报名手机网站" class="project-image" />
         </div>
       </div>
 
@@ -73,14 +73,14 @@
       <div class="project-row column1">
         <div class="project-item">
           <a href="https://erp.vectoroptics.cn/" target="_blank" class="project-link">旭洁威特 ERP >></a>
-          <img src="/img/cases_l8.jpg" alt="旭洁威特 ERP" class="project-image" />
+          <img :src="withBase('img/cases_l8.jpg')" alt="旭洁威特 ERP" class="project-image" />
         </div>
       </div>
 
       <div class="project-row column1">
         <div class="project-item">
           <a href="http://www.yyxx.danlu.net/" target="_blank" class="project-link">茱丽珠宝 CRM >></a>
-          <img src="/img/cases_l7.jpg" alt="茱丽珠宝 CRM" class="project-image" />
+          <img :src="withBase('img/cases_l7.jpg')" alt="茱丽珠宝 CRM" class="project-image" />
         </div>
       </div>
 
@@ -88,29 +88,29 @@
       <div class="project-row column2">
         <div class="project-item">
           <span class="project-label">房产信息1</span>
-          <img src="/img/cases_l5.jpg" alt="房产信息1" class="project-image" />
+          <img :src="withBase('img/cases_l5.jpg')" alt="房产信息1" class="project-image" />
         </div>
         <div class="project-item">
           <span class="project-label">房产信息2</span>
-          <img src="/img/cases_l4.jpg" alt="房产信息2" class="project-image" />
+          <img :src="withBase('img/cases_l4.jpg')" alt="房产信息2" class="project-image" />
         </div>
       </div>
 
       <div class="project-row column2">
         <div class="project-item">
           <span class="project-label">债权管理</span>
-          <img src="/img/cases_l3.jpg" alt="债权管理" class="project-image" />
+          <img :src="withBase('img/cases_l3.jpg')" alt="债权管理" class="project-image" />
         </div>
         <div class="project-item">
           <span class="project-label">培训排课</span>
-          <img src="/img/cases_l2.jpg" alt="培训排课" class="project-image" />
+          <img :src="withBase('img/cases_l2.jpg')" alt="培训排课" class="project-image" />
         </div>
       </div>
 
       <div class="project-row column2">
         <div class="project-item">
           <span class="project-label">比赛报名</span>
-          <img src="/img/cases_l1.jpg" alt="比赛报名" class="project-image" />
+          <img :src="withBase('img/cases_l1.jpg')" alt="比赛报名" class="project-image" />
         </div>
       </div>
     </div>
@@ -118,61 +118,64 @@
 </template>
 
 <script setup>
+const baseUrl = import.meta.env.BASE_URL
+const withBase = (path) => `${baseUrl}${path}`
+
 const apps = [
   {
     title: 'APP项目1',
-    image: '/img/cases_WechatIMG327.jpg',
-    icon: '/img/cases_FmFJTHCfigNHIFdkqlpxxmInhJKF.png'
+    image: withBase('img/cases_WechatIMG327.jpg'),
+    icon: withBase('img/cases_FmFJTHCfigNHIFdkqlpxxmInhJKF.png')
   },
   {
     title: 'APP项目2',
-    image: '/img/cases_WechatIMG328.jpg',
-    icon: '/img/cases_Fu11TsP1GYQiXessdhyxxDx-BkEg.png'
+    image: withBase('img/cases_WechatIMG328.jpg'),
+    icon: withBase('img/cases_Fu11TsP1GYQiXessdhyxxDx-BkEg.png')
   },
   {
     title: 'APP项目3',
-    image: '/img/cases_WechatIMG330.jpg',
-    icon: '/img/cases_Fl9wxzb-3iIiP6VjWdQ6rZ8fV9bD.png'
+    image: withBase('img/cases_WechatIMG330.jpg'),
+    icon: withBase('img/cases_Fl9wxzb-3iIiP6VjWdQ6rZ8fV9bD.png')
   },
   {
     title: 'APP项目4',
-    image: '/img/cases_WechatIMG329.jpg',
-    icon: '/img/cases_FqppqwrfdlrMKPsubjULKfHwtc6D.png'
+    image: withBase('img/cases_WechatIMG329.jpg'),
+    icon: withBase('img/cases_FqppqwrfdlrMKPsubjULKfHwtc6D.png')
   },
   {
     title: 'APP项目5',
-    image: '/img/cases_WechatIMG331.jpg',
-    icon: '/img/cases_FtVOp9mNOzT52MJhI_4hXeon8LdE.png'
+    image: withBase('img/cases_WechatIMG331.jpg'),
+    icon: withBase('img/cases_FtVOp9mNOzT52MJhI_4hXeon8LdE.png')
   },
   {
     title: 'APP项目6',
-    image: '/img/cases_WechatIMG332.jpg',
-    icon: '/img/cases_FotoPDH06zIcUsd4baQ5xKGvXtOK.png'
+    image: withBase('img/cases_WechatIMG332.jpg'),
+    icon: withBase('img/cases_FotoPDH06zIcUsd4baQ5xKGvXtOK.png')
   },
   {
     title: 'APP项目7',
-    image: '/img/cases_WechatIMG333.jpg',
-    icon: '/img/cases_FhH6-k9S4avZULpPoCHk0zJ33hlQ.png'
+    image: withBase('img/cases_WechatIMG333.jpg'),
+    icon: withBase('img/cases_FhH6-k9S4avZULpPoCHk0zJ33hlQ.png')
   },
   {
     title: 'APP项目8',
-    image: '/img/cases_WechatIMG334.jpg',
-    icon: '/img/cases_FtrsEP18ApW7AZ0a65KituNmHN_3.png'
+    image: withBase('img/cases_WechatIMG334.jpg'),
+    icon: withBase('img/cases_FtrsEP18ApW7AZ0a65KituNmHN_3.png')
   },
   {
     title: 'APP项目9',
-    image: '/img/cases_WechatIMG335.jpg',
-    icon: '/img/cases_FgNUsr5uKSyHWXtaLy7BTKpmZnbr.png'
+    image: withBase('img/cases_WechatIMG335.jpg'),
+    icon: withBase('img/cases_FgNUsr5uKSyHWXtaLy7BTKpmZnbr.png')
   },
   {
     title: 'APP项目10',
-    image: '/img/cases_WechatIMG336.jpg',
-    icon: '/img/cases_FgVDt0Sx4gxSnsf_QJxKfMsiOcgt.png'
+    image: withBase('img/cases_WechatIMG336.jpg'),
+    icon: withBase('img/cases_FgVDt0Sx4gxSnsf_QJxKfMsiOcgt.png')
   },
   {
     title: 'APP项目11',
-    image: '/img/cases_WechatIMG337.jpg',
-    icon: '/img/cases_FmyDwNQ7p-8vcuEy0OuSvfO_AUos.png'
+    image: withBase('img/cases_WechatIMG337.jpg'),
+    icon: withBase('img/cases_FmyDwNQ7p-8vcuEy0OuSvfO_AUos.png')
   }
 ]
 </script>
