@@ -1,6 +1,7 @@
 <template>
   <div class="download-container">
     <iframe 
+      class="preview-frame"
       width="100%" 
       height="100%" 
       frameborder="0" 
@@ -42,6 +43,10 @@ iframe {
   width: 95vw;
   height: calc(100vh - 75px);
   border: none;
+}
+
+.preview-frame {
+  background-color: #f2f2f2;
 }
 
 .btn_box {
