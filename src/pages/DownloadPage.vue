@@ -4,13 +4,13 @@
       width="100%" 
       height="100%" 
       frameborder="0" 
-      src="https://view.officeapps.live.com/op/embed.aspx?src=https://xujieweite2021.d2scdn.com/u/xujieweite2021/2025/06/30/ViPodZZNZ9co52o6mTt96c/d_pm_resume.docx"
+      :src="iframeSrc"
     ></iframe>
     <div class="btn_box">
-      <a href="https://xujieweite2021.d2scdn.com/u/xujieweite2021/2025/06/30/ViPodZZNZ9co52o6mTt96c/d_pm_resume.docx" target="_blank">
+      <a :href="resumeDocxPath" target="_blank">
         <button class="btn1"><span>下载</span><br/><span>word版</span></button>
       </a>
-      <a href="https://xujieweite2021.d2scdn.com/u/xujieweite2021/2025/06/30/mv3AEYKrqAvdKGRNV8dYTZ/d_pm_resume.pdf" target="_blank">
+      <a :href="resumePdfPath" target="_blank">
         <button class="btn2"><span>下载</span><br/><span>pdf版</span></button>
       </a>
     </div>
@@ -18,6 +18,12 @@
 </template>
 
 <script setup>
+const resumeDocxPath = 'resume.docx'
+const resumePdfPath = 'resume.pdf'
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const resumeDocxPublicUrl = new URL(resumeDocxPath, window.location.href).toString()
+const officeEmbedUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(resumeDocxPublicUrl)}`
+const iframeSrc = isLocalhost ? resumePdfPath : officeEmbedUrl
 </script>
 
 <style scoped>
