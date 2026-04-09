@@ -1,35 +1,42 @@
 <template>
-  <header class="header">
-    <nav class="nav">
+  <header v-if="!isMobile" class="pc_header">
+    <nav class="pc_nav">
+      <ul class="pc_menu">
+        <li v-for="item in navItems" :key="item.to" class="pc_item">
+          <router-link :to="item.to" :class="['pc_link', { pc_linkActive: isItemActive(item) }]">
+            {{ item.label }}
+          </router-link>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <header v-else class="m_header">
+    <nav class="m_nav">
       <button
-        class="menu-toggle"
+        class="m_toggle"
         type="button"
-        :aria-expanded="isMenuOpen"
         aria-label="切换导航菜单"
+        aria-controls="m_menu"
+        :aria-expanded="isMenuOpen"
         @click="toggleMenu"
       >
-        <img class="menu-toggle__icon" :src="menuIcon" alt="" aria-hidden="true" />
+        <img class="m_toggleIcon" :src="menuIcon" alt="" aria-hidden="true" />
       </button>
 
-      <div v-if="isMenuOpen" class="menu-overlay" @click="closeMenu"></div>
+      <div class="m_title">{{ currentTitle }}</div>
 
-      <div class="nav-title">{{ currentTitle }}</div>
+      <div v-if="isMenuOpen" class="m_overlay" @click="closeMenu"></div>
 
-      <ul class="menu menu--desktop menu--left">
-        <li v-for="item in leftItems" :key="item.to">
-          <router-link :to="item.to">{{ item.label }}</router-link>
-        </li>
-      </ul>
-
-      <ul class="menu menu--desktop menu--right">
-        <li v-for="item in rightItems" :key="item.to">
-          <router-link :to="item.to">{{ item.label }}</router-link>
-        </li>
-      </ul>
-
-      <ul class="menu menu--mobile" :class="{ 'menu--open': isMenuOpen }">
-        <li v-for="item in navItems" :key="item.to">
-          <router-link :to="item.to" @click="closeMenu">{{ item.label }}</router-link>
+      <ul id="m_menu" class="m_menu" :class="{ m_menuOpen: isMenuOpen }" :aria-hidden="!isMenuOpen">
+        <li v-for="item in navItems" :key="item.to" class="m_item">
+          <router-link
+            :to="item.to"
+            :class="['m_link', { m_linkActive: isItemActive(item) }]"
+            @click="closeMenu"
+          >
+            {{ item.label }}
+          </router-link>
         </li>
       </ul>
     </nav>
@@ -37,11 +44,12 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import menuIcon from '../tup/menu.svg'
 
 const isMenuOpen = ref(false)
+const isMobile = ref(false)
 const route = useRoute()
 
 const navItems = [
@@ -53,8 +61,10 @@ const navItems = [
   { to: '/aibox', label: 'AI工具箱' },
 ]
 
-const leftItems = computed(() => navItems.slice(0, 3))
-const rightItems = computed(() => navItems.slice(3))
+const isItemActive = (item) => {
+  const path = route.path
+  return item.to === '/' ? path === '/' : path.startsWith(item.to)
+}
 
 const currentTitle = computed(() => {
   const path = route.path
@@ -70,8 +80,53 @@ const closeMenu = () => {
   isMenuOpen.value = false
 }
 
+const mobileMediaQuery = '(max-width: 768px)'
+let mobileMediaMatcher
+let mobileMediaHandler
+
+const syncIsMobile = () => {
+  isMobile.value = window.matchMedia(mobileMediaQuery).matches
+}
+
+const handleKeydown = (event) => {
+  if (!isMenuOpen.value) return
+  if (event.key === 'Escape') closeMenu()
+}
+
+onMounted(() => {
+  syncIsMobile()
+  mobileMediaMatcher = window.matchMedia(mobileMediaQuery)
+  mobileMediaHandler = (event) => {
+    isMobile.value = event.matches
+  }
+  if (mobileMediaMatcher.addEventListener) {
+    mobileMediaMatcher.addEventListener('change', mobileMediaHandler)
+  } else {
+    mobileMediaMatcher.addListener(mobileMediaHandler)
+  }
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+  if (mobileMediaMatcher && mobileMediaHandler) {
+    if (mobileMediaMatcher.removeEventListener) {
+      mobileMediaMatcher.removeEventListener('change', mobileMediaHandler)
+    } else {
+      mobileMediaMatcher.removeListener(mobileMediaHandler)
+    }
+  }
+  window.removeEventListener('keydown', handleKeydown)
+})
+
 watch(
   () => route.fullPath,
+  () => {
+    closeMenu()
+  }
+)
+
+watch(
+  () => isMobile.value,
   () => {
     closeMenu()
   }
@@ -79,7 +134,8 @@ watch(
 </script>
 
 <style scoped>
-.header {
+.pc_header,
+.m_header {
   position: fixed;
   top: 0;
   left: 0;
@@ -88,30 +144,14 @@ watch(
   z-index: 1000;
 }
 
-.nav {
+.pc_nav {
   height: 50px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
-.nav-title {
-  grid-column: 2;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 50px;
-  padding: 0 12px;
-  white-space: nowrap;
-  max-width: 60vw;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-}
-
-.menu {
+.pc_menu {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -119,25 +159,11 @@ watch(
   justify-content: center;
 }
 
-.menu--left {
-  grid-column: 1;
-  justify-content: flex-end;
-}
-
-.menu--right {
-  grid-column: 3;
-  justify-content: flex-start;
-}
-
-.menu--mobile {
-  display: none;
-}
-
-.menu li {
+.pc_item {
   padding: 0 15px;
 }
 
-.menu a {
+.pc_link {
   color: white;
   text-decoration: none;
   font-size: 16px;
@@ -146,13 +172,33 @@ watch(
   display: block;
 }
 
-.menu a:hover,
-.menu a.router-link-active {
+.pc_link:hover,
+.pc_linkActive {
   color: var(--accent-color, #ffde7c);
 }
 
-.menu-toggle {
-  display: none;
+.m_nav {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.m_title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 50px;
+  padding: 0 12px;
+  white-space: nowrap;
+  max-width: calc(100% - 120px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.m_toggle {
   position: absolute;
   left: 12px;
   top: 50%;
@@ -165,14 +211,14 @@ watch(
   cursor: pointer;
 }
 
-.menu-toggle__icon {
+.m_toggleIcon {
   display: block;
   width: 22px;
   height: 22px;
   margin: 0 auto;
 }
 
-.menu-overlay {
+.m_overlay {
   position: fixed;
   left: 0;
   right: 0;
@@ -182,57 +228,49 @@ watch(
   z-index: 999;
 }
 
-@media (max-width: 768px) {
-  .nav {
-    display: flex;
-    justify-content: center;
-  }
+.m_menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 50px;
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  background-color: var(--primary-color, #75a3e1);
+  transform: translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+}
 
-  .menu-toggle {
-    display: block;
-  }
+.m_menuOpen {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  .menu--desktop {
-    display: none;
-  }
+.m_item {
+  padding: 0;
+}
 
-  .nav-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: calc(100% - 120px);
-  }
+.m_link {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  line-height: 50px;
+  display: block;
+  padding: 0 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  transition: color 0.3s;
+}
 
-  .menu--mobile {
-    display: flex;
-    position: absolute;
-    left: 0;
-    top: 50px;
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    background-color: var(--primary-color, #75a3e1);
-    transform: translateY(-8px);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-    z-index: 1000;
-  }
-
-  .menu--open {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .menu--mobile li {
-    padding: 0;
-  }
-
-  .menu--mobile a {
-    padding: 0 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-  }
+.m_link:hover,
+.m_linkActive {
+  color: var(--accent-color, #ffde7c);
 }
 </style>
