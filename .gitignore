@@ -3,5 +3,6 @@
 temp
 compose.yml
 .DS_Store
-.traedist/
+.trae%
+dist/
 docs/
