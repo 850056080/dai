@@ -4,5 +4,9 @@ temp
 compose.yml
 .DS_Store
 .trae%
+.codeartsdoer
 dist/
 docs/
+
+# 批量重命名映射表（本地生成）
+img-rename-map*.csv

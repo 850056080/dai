@@ -2,7 +2,7 @@
   <div class="resume-container">
     <aside class="sidebar">
       <figure>
-        <img src="/img/cases_resume_avatar.jpg" width="100%" alt="代宇航" />
+        <img src="/img/cases_k_all_pc_ui_resume-avatar.jpg" width="100%" alt="代宇航" />
       </figure>
       <h1>代宇航</h1>
       <p style="margin-bottom: 20px; font-size: 1.1rem;">资深项目经理</p>
