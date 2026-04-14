@@ -59,7 +59,9 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  // Gitee/GitHub Pages 都是纯静态托管：使用 Hash 路由最稳
+  // 传入 BASE_URL 以确保在 /dai/ 子路径部署时路由生成的链接正确
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,
 })
 
