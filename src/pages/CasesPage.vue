@@ -12,384 +12,821 @@
         <div class="profile-info">
           <h1 class="profile-name">Dom代宇航</h1>
           <p class="profile-title">上海 | 项目经理</p>
-          <p class="profile-motto">no one is more powerful than me</p>
+          <p class="profile-motto">以结果为导向，聚焦交付质量：从需求澄清到上线运营，全流程推进。</p>
           <div class="stats">
             <div class="stat-item">
               <span class="stat-label">项目数量：</span>
-              <span class="stat-value">35</span>
+              <span class="stat-value">{{ statsTotal }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">PC端项目：</span>
+              <span class="stat-value">{{ statsPC }}</span>
             </div>
             <div class="stat-item">
               <span class="stat-label">移动端项目：</span>
-              <span class="stat-value">16</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">OA项目：</span>
-              <span class="stat-value">10</span>
+              <span class="stat-value">{{ statsM }}</span>
             </div>
           </div>
-          <button class="project-btn">项目展示</button>
+        </div>
+        <div class="profile-action">
+          <button class="project-btn" type="button" @click="scrollToTypeTabs">项目展示</button>
         </div>
       </div>
     </div>
 
     <!-- 项目类型筛选（PC端） -->
-    <div class="type-tabs" aria-label="项目类型筛选">
+    <div ref="typeTabsRef" class="type-tabs" aria-label="项目类型筛选">
       <div class="type-tabs__row">
         <button
-          v-for="item in companyTabs"
-          :key="item"
+          v-for="item in companyNavOptions"
+          :key="item.key"
           type="button"
           class="type-tabs__item"
-          :class="{ 'is-active': activeCompany === item }"
-          @click="selectCompany(item)"
+          :class="{ 'is-active': activeCompanyNav === item.key }"
+          @click="scrollToCompany(item.key)"
         >
-          {{ item }}
+          {{ item.label }}
         </button>
       </div>
-      <div class="type-tabs__row">
+      <div class="type-tabs__row" aria-label="端和分类筛选">
         <button
-          v-for="item in categoryTabs"
-          :key="item"
+          v-for="item in platformOptions"
+          :key="item.key"
           type="button"
           class="type-tabs__item"
-          :class="{ 'is-active': isCategoryActive(item) }"
-          @click="toggleCategory(item)"
+          :class="{ 'is-active': isPlatformSelected(item.key) }"
+          @click="togglePlatform(item.key)"
         >
-          {{ item }}
+          {{ item.label }}
+        </button>
+        <span class="type-tabs__divider" aria-hidden="true">｜</span>
+        <button
+          v-for="item in typeOptions"
+          :key="item.key"
+          type="button"
+          class="type-tabs__item"
+          :class="{ 'is-active': isTypeSelected(item.key) }"
+          @click="toggleType(item.key)"
+        >
+          {{ item.label }}
         </button>
       </div>
     </div>
 
     <!-- 项目展示 -->
     <div class="project-showcase">
-      <!-- 炎雷：大屏/BI 相关图片（两列） -->
-      <div class="yanlei-yl">
-        <div class="project-row column2">
-          <div v-for="item in ylImages" :key="item.id" class="project-item">
-            <span class="project-label">{{ item.title }}</span>
-            <img
-              :src="withBase(`img/${item.file}`)"
-              :alt="item.title"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase(`img/${item.file}`), item.title)"
-            />
-          </div>
-        </div>
-      </div>
+      <div ref="showcaseTopRef"></div>
 
-      <div class="yanlei-image">
-        <img
-          :src="withBase('img/cases_n_rh_pc_all_lg1.jpg')"
-          alt="案例展示"
-          class="yanlei-image__img"
-          loading="lazy"
-          @click="openImageModal(withBase('img/cases_n_rh_pc_all_lg1.jpg'), '案例展示')"
-        />
-      </div>
+      <section
+        v-for="section in companySections"
+        :key="section.company"
+        class="company-section"
+        v-show="section.pcItems.length || section.mItems.length"
+        :ref="(el) => setCompanySectionRef(section.company, el)"
+      >
+        <div class="company-section__title">{{ section.title }}</div>
 
-      <div class="yanlei-image">
-        <img
-          :src="withBase('img/cases_n_rh_pc_all_service-index.jpg')"
-          alt="案例展示"
-          class="yanlei-image__img"
-          loading="lazy"
-          @click="openImageModal(withBase('img/cases_n_rh_pc_all_service-index.jpg'), '案例展示')"
-        />
-      </div>
-
-      <div class="renhai">
-        <!-- 4列展示 (原APP) -->
-        <div class="project-row column4">
-          <div class="project-item" v-for="(app, index) in apps" :key="index">
-            <div class="app-image-wrapper">
+        <div v-if="section.pcItems.length" class="company-section__block">
+          <div class="project-row column2">
+            <div v-for="item in section.pcItems" :key="item.name" class="project-item project-card">
               <img
-                :src="app.image"
-                :alt="app.title"
+                :src="withBase(`img/${item.img || FALLBACK_IMG}`)"
+                :alt="item.name"
                 class="project-image"
                 loading="lazy"
-                @click.stop="openImageModal(app.image, app.title)"
+                @click="openProjectModal(item)"
               />
-              <div class="app-overlay">
-                <img :src="app.icon" :alt="app.title" class="app-icon" />
-              </div>
+              <span class="project-label">
+                <a
+                  v-if="item.url"
+                  class="project-label__link"
+                  :href="item.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="打开项目链接"
+                  @click.stop
+                >
+                  <i class="fa-solid fa-link project-label__icon" aria-hidden="true"></i>
+                </a>
+                <span class="project-label__text">{{ item.name }}</span>
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- 2列展示 -->
-        <div class="project-row column2">
-          <div class="project-item">
-            <a href="https://www.basf.com/cn/zh.html" target="_blank" class="project-link">巴斯夫网站 >></a>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l10.jpg')"
-              alt="巴斯夫网站"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l10.jpg'), '巴斯夫网站')"
-            />
-          </div>
-          <div class="project-item">
-            <a href="https://www.lesu3d.com/" target="_blank" class="project-link">乐塑3D >></a>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l9.jpg')"
-              alt="乐塑3D"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l9.jpg'), '乐塑3D')"
-            />
-          </div>
-        </div>
-        
-        <div class="project-row column4">
-          <div class="project-item">
-            <span class="project-label">匠制堂手机网站</span>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l6.jpg')"
-              alt="匠制堂手机网站"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l6.jpg'), '匠制堂手机网站')"
-            />
-          </div>
-          <div class="project-item">
-            <span class="project-label">比赛报名手机网站</span>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l11.jpg')"
-              alt="比赛报名手机网站"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l11.jpg'), '比赛报名手机网站')"
-            />
+        <div v-if="section.mItems.length" class="company-section__block">
+          <div class="project-row column4">
+            <div v-for="item in section.mItems" :key="item.name" class="project-item project-card">
+              <img
+                :src="withBase(`img/${item.img || FALLBACK_IMG}`)"
+                :alt="item.name"
+                class="project-image"
+                loading="lazy"
+                @click="openProjectModal(item)"
+              />
+              <span class="project-label">
+                <a
+                  v-if="item.url"
+                  class="project-label__link"
+                  :href="item.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="打开项目链接"
+                  @click.stop
+                >
+                  <i class="fa-solid fa-link project-label__icon" aria-hidden="true"></i>
+                </a>
+                <span class="project-label__text">{{ item.name }}</span>
+              </span>
+            </div>
           </div>
         </div>
-
-        <!-- 1列展示 -->
-        <div class="project-row column1">
-          <div class="project-item">
-            <a href="https://erp.vectoroptics.cn/" target="_blank" class="project-link">旭洁威特 ERP >></a>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l8.jpg')"
-              alt="旭洁威特 ERP"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l8.jpg'), '旭洁威特 ERP')"
-            />
-          </div>
-        </div>
-
-        <div class="project-row column1">
-          <div class="project-item">
-            <a href="http://www.yyxx.danlu.net/" target="_blank" class="project-link">茱丽珠宝 CRM >></a>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l7.jpg')"
-              alt="茱丽珠宝 CRM"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l7.jpg'), '茱丽珠宝 CRM')"
-            />
-          </div>
-        </div>
-
-        <!-- 2列展示 -->
-        <div class="project-row column2">
-          <div class="project-item">
-            <span class="project-label">房产信息1</span>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l5.jpg')"
-              alt="房产信息1"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l5.jpg'), '房产信息1')"
-            />
-          </div>
-          <div class="project-item">
-            <span class="project-label">房产信息2</span>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l4.jpg')"
-              alt="房产信息2"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l4.jpg'), '房产信息2')"
-            />
-          </div>
-        </div>
-
-        <div class="project-row column2">
-          <div class="project-item">
-            <span class="project-label">债权管理</span>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l3.jpg')"
-              alt="债权管理"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l3.jpg'), '债权管理')"
-            />
-          </div>
-          <div class="project-item">
-            <span class="project-label">培训排课</span>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l2.jpg')"
-              alt="培训排课"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l2.jpg'), '培训排课')"
-            />
-          </div>
-        </div>
-
-        <div class="project-row column2">
-          <div class="project-item">
-            <span class="project-label">比赛报名</span>
-            <img
-              :src="withBase('img/cases_n_rh_pc_all_l1.jpg')"
-              alt="比赛报名"
-              class="project-image"
-              loading="lazy"
-              @click="openImageModal(withBase('img/cases_n_rh_pc_all_l1.jpg'), '比赛报名')"
-            />
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
 
-    <!-- 图片预览弹窗 -->
-    <div v-if="isImageModalOpen" class="img-modal" role="dialog" aria-modal="true" @click.self="closeImageModal">
+    <!-- 项目弹窗 -->
+    <div v-if="isProjectModalOpen" class="img-modal" role="dialog" aria-modal="true" @click.self="closeProjectModal">
       <div class="img-modal__content">
         <div class="img-modal__header">
-          <div class="img-modal__headerTitle" :title="imageModalTitle">{{ imageModalTitle }}</div>
-          <button class="img-modal__close" type="button" aria-label="关闭" @click="closeImageModal">
+          <div class="img-modal__headerTitle" :title="currentProject?.name">{{ currentProject?.name }}</div>
+          <button
+            ref="closeButtonRef"
+            class="img-modal__close"
+            type="button"
+            aria-label="关闭"
+            @click="closeProjectModal"
+          >
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
           </button>
         </div>
-        <img class="img-modal__img" :src="imageModalSrc" :alt="imageModalTitle" />
+        <img class="img-modal__img" :src="currentProjectImg" :alt="currentProject?.name" />
+        <div v-if="currentProject?.desc" class="project-modal__desc">{{ currentProject.desc }}</div>
+        <div class="project-modal__actions">
+          <a
+            v-if="currentProject?.url"
+            class="project-modal__btn"
+            :href="currentProject.url"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            打开项目链接
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const baseUrl = import.meta.env.BASE_URL
 const withBase = (path) => `${baseUrl}${path}`
 
-const isImageModalOpen = ref(false)
-const imageModalSrc = ref('')
-const imageModalTitle = ref('')
+const FALLBACK_IMG = 'cases_k_banner.png'
+const typeTabsRef = ref(null)
+const showcaseTopRef = ref(null)
 
-const openImageModal = (src, title = '') => {
-  imageModalSrc.value = String(src || '')
-  imageModalTitle.value = String(title || '')
-  isImageModalOpen.value = true
+const scrollToTypeTabs = () => {
+  const el = typeTabsRef.value
+  if (!el) return
+  // 顶部有固定导航（50px）+ 给一点留白
+  const top = el.getBoundingClientRect().top + window.scrollY - 60
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
 }
 
-const closeImageModal = () => {
-  isImageModalOpen.value = false
-  imageModalSrc.value = ''
-  imageModalTitle.value = ''
+const getCompanyScrollOffset = () => {
+  // 顶部固定导航（约 50px）+ 留白
+  const base = 60
+  // 公司按钮所在的 .type-tabs 是 sticky，会遮挡内容，滚动定位时需要额外减去它的高度
+  const tabsHeight = typeTabsRef.value?.getBoundingClientRect()?.height ?? 0
+  return base + tabsHeight
+}
+
+// ========== 筛选项 ==========
+// 公司（用于导航滚动）
+const companyNavOptions = [
+  { key: 'all', label: '全部' },
+  { key: 'yl', label: '上海炎雷公司' },
+  { key: 'lg', label: '临港集团' },
+  { key: 'rh', label: '上海仁海公司' },
+  { key: 'hc', label: '慧聪集团' },
+]
+
+// 选中高亮：用于公司导航（不做筛选）
+const activeCompanyNav = ref('all')
+
+const companySectionRefs = ref({})
+
+const setCompanySectionRef = (key, el) => {
+  if (!el) return
+  companySectionRefs.value[key] = el
+}
+
+const scrollToCompany = (key) => {
+  activeCompanyNav.value = key
+
+  // “全部”滚回项目展示顶部
+  if (key === 'all') {
+    const el = showcaseTopRef.value || typeTabsRef.value
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY - getCompanyScrollOffset()
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+    return
+  }
+
+  const el = companySectionRefs.value[key]
+  if (!el) return
+  const top = el.getBoundingClientRect().top + window.scrollY - getCompanyScrollOffset()
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+}
+
+// 分类（用于 type / platform 筛选：单选）
+const platformOptions = [
+  { key: 'all', label: '全部' },
+  { key: 'pc', label: 'PC端' },
+  { key: 'm', label: '移动端' },
+]
+
+const typeOptions = [
+  { key: 'all', label: '全部' },
+  { key: 'sys', label: '系统集成' },
+  { key: 'bi', label: 'BI可视化' },
+  { key: 'web', label: '企业网站' },
+  { key: 'app', label: 'APP' },
+  { key: 'h5', label: 'H5' },
+  { key: 'mp', label: '小程序' },
+]
+
+const activePlatform = ref('all')
+const activeType = ref('all')
+
+const isPlatformSelected = (key) => activePlatform.value === key
+const isTypeSelected = (key) => activeType.value === key
+const togglePlatform = (key) => {
+  activePlatform.value = key
+}
+const toggleType = (key) => {
+  activeType.value = key
+}
+
+// ========== 页面主数据 ==========
+// 结构：[{name,seq,img,url,company,type,platform,desc}]
+// 你后续可以在这里手动补录/修改数据；保持字段固定，便于筛选与排序。
+const pageMainData = [
+  // 自动扫描 public/img 生成（你可以继续手动编辑：name/seq/url/desc）
+  {
+    name: '炎雷公司-工程管家快应用',
+    seq: 1,
+    img: 'cases_n_yl_pc_gc.jpg',
+    url: 'https://yhjc.htpsoftai.com/#/',
+    company: 'yl',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '炎雷公司-工程管家快应用-智能管理大屏',
+    seq: 1,
+    img: 'cases_n_yl_pc_bi_sdpl012.jpg',
+    url: 'https://ontest.htpsoftai.com:58500/sdpl012/index.html',
+    company: 'yl',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '炎雷-PC-BI-sdpl013',
+    seq: 2,
+    img: 'cases_n_yl_pc_bi_sdpl013.jpg',
+    url: 'https://ontest.htpsoftai.com:58500/sdpl013/index.html',
+    company: 'yl',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '炎雷-PC-BI-sdpl014',
+    seq: 3,
+    img: 'cases_n_yl_pc_bi_sdpl014.jpg',
+    url: 'https://ontest.htpsoftai.com:58500/sdpl014/index.html',
+    company: 'yl',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '炎雷-PC-BI-sdpl015',
+    seq: 4,
+    img: 'cases_n_yl_pc_bi_sdpl015.jpg',
+    url: 'https://ontest.htpsoftai.com:58500/sdpl015/index.html',
+    company: 'yl',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '炎雷-PC-BI-sdpl017',
+    seq: 5,
+    img: 'cases_n_yl_pc_bi_sdpl017.jpg',
+    url: 'https://ontest.htpsoftai.com:58500/sdpl017/index.html',
+    company: 'yl',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '炎雷-PC-BI-sdpl019',
+    seq: 5,
+    img: 'cases_n_yl_pc_bi_sdpl019.jpg',
+    url: 'https://ontest.htpsoftai.com:58500/sdpl019/index.html',
+    company: 'yl',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+    {
+    name: '临港集团-上海火车站排队预警屏',
+    seq: 22,
+    img: 'cases_n_rh_pc_all_lg1.jpg',
+    url: '',
+    company: 'lg',
+    type: 'bi',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '临港集团-上海教委',
+    seq: 22,
+    img: 'cases_n_rh_pc_all_service-index.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l1',
+    seq: 33,
+    img: 'cases_n_rh_pc_all_l1.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l10',
+    seq: 33,
+    img: 'cases_n_rh_pc_all_l10.jpg',
+    url: 'https://www.basf.com/cn/zh',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l11',
+    seq: 33,
+    img: 'cases_n_rh_m_all_l11.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l2',
+    seq: 40,
+    img: 'cases_n_rh_pc_all_l2.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l3',
+    seq: 50,
+    img: 'cases_n_rh_pc_all_l3.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l4',
+    seq: 60,
+    img: 'cases_n_rh_pc_all_l4.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l5',
+    seq: 70,
+    img: 'cases_n_rh_pc_all_l5.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l6',
+    seq: 80,
+    img: 'cases_n_rh_m_all_l6.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l7',
+    seq: 90,
+    img: 'cases_n_rh_pc_all_l7.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l8',
+    seq: 100,
+    img: 'cases_n_rh_pc_all_l8.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-PC-未分类-l9',
+    seq: 110,
+    img: 'cases_n_rh_pc_all_l9.jpg',
+    url: 'https://www.lesu3d.com/',
+    company: 'rh',
+    type: 'all',
+    platform: 'pc',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg327',
+    seq: 1000,
+    img: 'cases_n_rh_m_all_wechatimg327.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg328',
+    seq: 1010,
+    img: 'cases_n_rh_m_all_wechatimg328.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg329',
+    seq: 1020,
+    img: 'cases_n_rh_m_all_wechatimg329.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg330',
+    seq: 1030,
+    img: 'cases_n_rh_m_all_wechatimg330.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg331',
+    seq: 1040,
+    img: 'cases_n_rh_m_all_wechatimg331.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg332',
+    seq: 1050,
+    img: 'cases_n_rh_m_all_wechatimg332.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg333',
+    seq: 1060,
+    img: 'cases_n_rh_m_all_wechatimg333.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg334',
+    seq: 1070,
+    img: 'cases_n_rh_m_all_wechatimg334.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg335',
+    seq: 1080,
+    img: 'cases_n_rh_m_all_wechatimg335.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg336',
+    seq: 1090,
+    img: 'cases_n_rh_m_all_wechatimg336.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-未分类-wechatimg337',
+    seq: 1100,
+    img: 'cases_n_rh_m_all_wechatimg337.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fgnusr5uksyhwxtaly7btkpmznbr',
+    seq: 1110,
+    img: 'cases_n_rh_m_app_fgnusr5uksyhwxtaly7btkpmznbr.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fgvdt0sx4gxsnsf-qjxkfmsiocgt',
+    seq: 1120,
+    img: 'cases_n_rh_m_app_fgvdt0sx4gxsnsf-qjxkfmsiocgt.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fhh6-k9s4avzulppochk0zj33hlq',
+    seq: 1130,
+    img: 'cases_n_rh_m_app_fhh6-k9s4avzulppochk0zj33hlq.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fl9wxzb-3iiip6vjwdq6rz8fv9bd',
+    seq: 1140,
+    img: 'cases_n_rh_m_app_fl9wxzb-3iiip6vjwdq6rz8fv9bd.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fmfjthcfignhifdkqlpxxminhjkf',
+    seq: 1150,
+    img: 'cases_n_rh_m_app_fmfjthcfignhifdkqlpxxminhjkf.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fmydwnq7p-8vcuey0ousvfo-auos',
+    seq: 1160,
+    img: 'cases_n_rh_m_app_fmydwnq7p-8vcuey0ousvfo-auos.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fotopdh06zicusd4baq5xkgvxtok',
+    seq: 1170,
+    img: 'cases_n_rh_m_app_fotopdh06zicusd4baq5xkgvxtok.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fqppqwrfdlrmkpsubjulkfhwtc6d',
+    seq: 1180,
+    img: 'cases_n_rh_m_app_fqppqwrfdlrmkpsubjulkfhwtc6d.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-ftrsep18apw7az0a65kitunmhn-3',
+    seq: 1190,
+    img: 'cases_n_rh_m_app_ftrsep18apw7az0a65kitunmhn-3.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-ftvop9mnozt52mjhi-4hxeon8lde',
+    seq: 1200,
+    img: 'cases_n_rh_m_app_ftvop9mnozt52mjhi-4hxeon8lde.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fu11tsp1gyqixessdhyxxdx-bkeg',
+    seq: 1210,
+    img: 'cases_n_rh_m_app_fu11tsp1gyqixessdhyxxdx-bkeg.png',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+  {
+    name: '仁海-移动端-APP-fv-kkuj-x-inmznhowmp4f5acg68',
+    seq: 1220,
+    img: 'cases_n_rh_m_app_fv-kkuj-x-inmznhowmp4f5acg68.jpg',
+    url: '',
+    company: 'rh',
+    type: 'app',
+    platform: 'm',
+    desc: '',
+  },
+]
+
+const normalizedData = computed(() => {
+  return pageMainData.map((raw) => {
+    const seq = Number.isFinite(Number(raw?.seq)) ? Number(raw.seq) : 0
+    const img = String(raw?.img || '').trim() || FALLBACK_IMG
+    const name = String(raw?.name || '').trim() || img
+    const company = String(raw?.company || 'all')
+    const type = String(raw?.type || 'all')
+    // platform 必须用于布局分组：只允许 pc/m，不合法则默认 pc
+    const platform = raw?.platform === 'm' ? 'm' : 'pc'
+    const url = String(raw?.url || '').trim()
+    const desc = String(raw?.desc || '').trim()
+
+    return { name, seq, img, url, company, type, platform, desc }
+  })
+})
+
+// ========== 统计（基于主数据） ==========
+const statsTotal = computed(() => normalizedData.value.length)
+const statsPC = computed(() => normalizedData.value.filter((i) => i.platform === 'pc').length)
+const statsM = computed(() => normalizedData.value.filter((i) => i.platform === 'm').length)
+
+const sortedData = computed(() => [...normalizedData.value].sort((a, b) => (a?.seq ?? 0) - (b?.seq ?? 0)))
+
+const filteredData = computed(() => {
+  return sortedData.value.filter((item) => {
+    // platform/type 允许 item 为 all 表示“通用/未归类”——在筛选时算匹配
+    if (activePlatform.value !== 'all' && item.platform !== activePlatform.value && item.platform !== 'all') return false
+
+    if (activeType.value !== 'all' && item.type !== activeType.value && item.type !== 'all') return false
+
+    return true
+  })
+})
+
+const companySections = computed(() => {
+  const sectionOrder = companyNavOptions.filter((c) => c.key !== 'all')
+  const sections = sectionOrder.map((c) => ({
+    company: c.key,
+    title: c.label,
+    pcItems: [],
+    mItems: [],
+  }))
+
+  // 可选：把 company=all 的项目放到“通用”区块（如果有）
+  const misc = { company: 'misc', title: '通用', pcItems: [], mItems: [] }
+
+  const map = new Map(sections.map((s) => [s.company, s]))
+
+  for (const item of filteredData.value) {
+    const target =
+      item.company === 'all' ? misc : map.get(item.company) || misc
+    if (item.platform === 'm') target.mItems.push(item)
+    else target.pcItems.push(item)
+  }
+
+  // pc/m 内部按 seq 保持顺序（已 sortedData，但分组后再稳一次）
+  for (const s of sections) {
+    s.pcItems.sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
+    s.mItems.sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
+  }
+  misc.pcItems.sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
+  misc.mItems.sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
+
+  const res = [...sections]
+  if (misc.pcItems.length || misc.mItems.length) res.push(misc)
+  return res
+})
+
+// ========== 弹窗 ==========
+const isProjectModalOpen = ref(false)
+const currentProject = ref(null)
+const closeButtonRef = ref(null)
+
+const currentProjectImg = computed(() => {
+  const img = currentProject.value?.img || FALLBACK_IMG
+  return img ? withBase(`img/${img}`) : ''
+})
+
+const openProjectModal = (item) => {
+  currentProject.value = item
+  isProjectModalOpen.value = true
+}
+
+const closeProjectModal = () => {
+  isProjectModalOpen.value = false
+  currentProject.value = null
 }
 
 const handleKeydown = (e) => {
-  if (!isImageModalOpen.value) return
-  if (e.key === 'Escape') closeImageModal()
+  if (!isProjectModalOpen.value) return
+  if (e.key === 'Escape') closeProjectModal()
 }
 
 onMounted(() => window.addEventListener('keydown', handleKeydown))
 onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
 
-const ylImages = [
-  { id: 'sdpl019', title: '炎雷 BI - sdpl019', file: 'cases_n_yl_pc_bi_sdpl019.jpg' },
-  { id: 'sdpl012', title: '炎雷 BI - sdpl012', file: 'cases_n_yl_pc_bi_sdpl012.jpg' },
-  { id: 'sdpl013', title: '炎雷 BI - sdpl013', file: 'cases_n_yl_pc_bi_sdpl013.jpg' },
-  { id: 'sdpl014', title: '炎雷 BI - sdpl014', file: 'cases_n_yl_pc_bi_sdpl014.jpg' },
-  { id: 'sdpl015', title: '炎雷 BI - sdpl015', file: 'cases_n_yl_pc_bi_sdpl015.jpg' },
-  { id: 'sdpl017', title: '炎雷 BI - sdpl017', file: 'cases_n_yl_pc_bi_sdpl017.jpg' },
-]
-
-// 一级标签（同级单选）
-const companyTabs = ['全部', '上海炎雷公司', '临港集团', '上海仁海公司', '慧聪集团']
-const activeCompany = ref(companyTabs[0])
-const selectCompany = (name) => {
-  activeCompany.value = name
-}
-
-// 二级标签（可多选；“全部”与其它互斥）
-const categoryTabs = ['全部', 'PC端', '系统集成', 'BI可视化', '企业网站', '移动端', '小程序', 'H5', 'APP']
-const activeCategories = ref(['全部'])
-
-const isCategoryActive = (name) => activeCategories.value.includes(name)
-
-const toggleCategory = (name) => {
-  if (name === '全部') {
-    activeCategories.value = ['全部']
-    return
+// 弹窗打开时禁止背景滚动，并自动聚焦关闭按钮
+watch(isProjectModalOpen, async (open) => {
+  if (typeof document === 'undefined') return
+  if (open) {
+    // lock scroll
+    document.body.dataset.prevOverflow = document.body.style.overflow || ''
+    document.body.style.overflow = 'hidden'
+    await nextTick()
+    closeButtonRef.value?.focus?.()
+  } else {
+    const prev = document.body.dataset.prevOverflow ?? ''
+    document.body.style.overflow = prev
+    delete document.body.dataset.prevOverflow
   }
+})
 
-  const set = new Set(activeCategories.value)
-  set.delete('全部')
-  if (set.has(name)) set.delete(name)
-  else set.add(name)
-  activeCategories.value = set.size ? Array.from(set) : ['全部']
-}
-
-const apps = [
-  {
-    title: 'APP项目1',
-    image: withBase('img/cases_n_rh_m_all_wechatimg327.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fmfjthcfignhifdkqlpxxminhjkf.png')
-  },
-  {
-    title: 'APP项目2',
-    image: withBase('img/cases_n_rh_m_all_wechatimg328.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fu11tsp1gyqixessdhyxxdx-bkeg.png')
-  },
-  {
-    title: 'APP项目3',
-    image: withBase('img/cases_n_rh_m_all_wechatimg330.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fl9wxzb-3iiip6vjwdq6rz8fv9bd.png')
-  },
-  {
-    title: 'APP项目4',
-    image: withBase('img/cases_n_rh_m_all_wechatimg329.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fqppqwrfdlrmkpsubjulkfhwtc6d.png')
-  },
-  {
-    title: 'APP项目5',
-    image: withBase('img/cases_n_rh_m_all_wechatimg331.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_ftvop9mnozt52mjhi-4hxeon8lde.png')
-  },
-  {
-    title: 'APP项目6',
-    image: withBase('img/cases_n_rh_m_all_wechatimg332.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fotopdh06zicusd4baq5xkgvxtok.png')
-  },
-  {
-    title: 'APP项目7',
-    image: withBase('img/cases_n_rh_m_all_wechatimg333.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fhh6-k9s4avzulppochk0zj33hlq.png')
-  },
-  {
-    title: 'APP项目8',
-    image: withBase('img/cases_n_rh_m_all_wechatimg334.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_ftrsep18apw7az0a65kitunmhn-3.png')
-  },
-  {
-    title: 'APP项目9',
-    image: withBase('img/cases_n_rh_m_all_wechatimg335.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fgnusr5uksyhwxtaly7btkpmznbr.png')
-  },
-  {
-    title: 'APP项目10',
-    image: withBase('img/cases_n_rh_m_all_wechatimg336.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fgvdt0sx4gxsnsf-qjxkfmsiocgt.png')
-  },
-  {
-    title: 'APP项目11',
-    image: withBase('img/cases_n_rh_m_all_wechatimg337.jpg'),
-    icon: withBase('img/cases_n_rh_m_app_fmydwnq7p-8vcuey0ousvfo-auos.png')
+onBeforeUnmount(() => {
+  if (typeof document === 'undefined') return
+  const prev = document.body.dataset.prevOverflow
+  if (prev !== undefined) {
+    document.body.style.overflow = prev
+    delete document.body.dataset.prevOverflow
   }
-]
+})
 </script>
 
 <style scoped>
@@ -398,7 +835,7 @@ const apps = [
   max-width: 3000px;
   margin: 0 auto;
   padding: 50px 0 40px;
-  background-color: #f6f6f6;
+  background-color: #f4f4f4;
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -452,6 +889,12 @@ const apps = [
   margin-top: 10px;
 }
 
+.type-tabs__divider {
+  color: rgba(0, 0, 0, 0.25);
+  padding: 6px 4px;
+  white-space: nowrap;
+}
+
 .type-tabs__item {
   appearance: none;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -481,6 +924,14 @@ const apps = [
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+.profile-action {
+  flex: 0 0 auto;
+}
+
+.profile-action .project-btn {
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
@@ -523,7 +974,7 @@ const apps = [
     line-height: 1.5;
   }
   .profile-info .stats,
-  .profile-info .project-btn {
+  .profile-action {
     display: none;
   }
 
@@ -685,26 +1136,30 @@ const apps = [
   margin: 0 auto;
 }
 
-.yanlei-yl {
-  margin-bottom: 15px;
-}
-
-.yanlei-image {
+.company-section {
   width: 100%;
-  background-color: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 15px;
-}
-
-.yanlei-image__img {
-  width: 100%;
-  height: auto;
   display: block;
+  clear: both;
 }
 
-.project-image,
-.yanlei-image__img {
+.company-section + .company-section {
+  margin-top: 18px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.company-section__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin: 10px 2px 10px;
+}
+
+.company-section__block + .company-section__block {
+  margin-top: 12px;
+}
+
+.project-image {
   cursor: zoom-in;
 }
 
@@ -724,8 +1179,8 @@ const apps = [
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: #fff;
@@ -734,6 +1189,10 @@ const apps = [
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.img-modal__close i {
+  font-size: 22px;
 }
 
 .img-modal__close:hover {
@@ -752,11 +1211,12 @@ const apps = [
   flex: 1;
   min-width: 0;
   color: #111827;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-indent: 0.5em;
 }
 
 .img-modal__content {
@@ -780,9 +1240,38 @@ const apps = [
   background: #f3f4f6;
 }
 
-.project-row {
+.project-modal__desc {
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.project-modal__actions {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.project-modal__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 5px;
+  background: var(--primary-color, #75a3e1);
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.project-modal__btn:hover {
+  background: #5f8fd6;
+}
+
+.project-row {
+  display: grid;
   gap: 15px;
   margin-bottom: 15px;
 }
@@ -792,45 +1281,42 @@ const apps = [
   border-radius: 10px;
   overflow: hidden;
   position: relative;
+  padding: 10px 10px 0 10px;
 }
 
-/* 一列展示 (100%) */
-.column1 .project-item {
-  width: 100%;
-  flex: 0 0 100%;
+/* grid 布局：更易维护 */
+.column1 {
+  grid-template-columns: 1fr;
 }
 
-/* 两列展示 (每列 ~50%) */
-.column2 .project-item {
-  width: calc(50% - 7.5px);
-  flex: 0 0 calc(50% - 7.5px);
+.column2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-/* 四列展示 (每列 ~25%) */
-.column4 .project-item {
-  width: calc(25% - 11.25px);
-  flex: 0 0 calc(25% - 11.25px);
+.column4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 @media (max-width: 768px) {
-  .yanlei-image {
-    border-radius: 8px;
-    margin-bottom: 12px;
-  }
-
   .column2 .project-item {
-    width: 100%;
-    flex: 0 0 100%;
+    width: auto;
   }
 
   .column4 .project-item {
-    width: calc(50% - 6px);
-    flex: 0 0 calc(50% - 6px);
+    width: auto;
   }
 
   .project-row {
     gap: 12px;
     margin-bottom: 12px;
+  }
+
+  .column2 {
+    grid-template-columns: 1fr;
+  }
+
+  .column4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .project-item {
@@ -896,17 +1382,51 @@ const apps = [
 }
 
 .project-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 10px;
   font-size: 14px;
   color: #333;
   text-align: center;
 }
 
+.project-label__text {
+  line-height: 1.2;
+}
+
+.project-label__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+
+.project-label__link:focus-visible {
+  outline: 2px solid rgba(117, 163, 225, 0.55);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.project-label__icon {
+  font-size: 14px;
+  color: #fff;
+  background: #75a3e1;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .project-image {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 8px;
 }
 
 @media (max-width: 768px) {
