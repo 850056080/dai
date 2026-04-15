@@ -281,12 +281,12 @@ const pageMainData = [
     img: 'cases_n_yl_pc_gc.jpg',
     url: 'https://yhjc.htpsoftai.com/#/',
     company: 'yl',
-    type: 'bi',
+    type: 'sys',
     platform: 'pc',
     desc: '',
   },
   {
-    name: '炎雷公司-工程管家快应用-智能管理大屏',
+    name: '炎雷公司-工程管家快应用-管理后台',
     seq: 1,
     img: 'cases_n_yl_pc_bi_sdpl012.jpg',
     url: 'https://ontest.htpsoftai.com:58500/sdpl012/index.html',
@@ -296,7 +296,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '炎雷-PC-BI-sdpl013',
+    name: '炎雷公司-工程管家-项目收支屏',
     seq: 2,
     img: 'cases_n_yl_pc_bi_sdpl013.jpg',
     url: 'https://ontest.htpsoftai.com:58500/sdpl013/index.html',
@@ -306,7 +306,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '炎雷-PC-BI-sdpl014',
+    name: '炎雷公司-工程管家-项目展示屏',
     seq: 3,
     img: 'cases_n_yl_pc_bi_sdpl014.jpg',
     url: 'https://ontest.htpsoftai.com:58500/sdpl014/index.html',
@@ -316,7 +316,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '炎雷-PC-BI-sdpl015',
+    name: '炎雷公司-工程管家-整体收支屏',
     seq: 4,
     img: 'cases_n_yl_pc_bi_sdpl015.jpg',
     url: 'https://ontest.htpsoftai.com:58500/sdpl015/index.html',
@@ -326,7 +326,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '炎雷-PC-BI-sdpl017',
+    name: '炎雷公司-工程管家-生产工序进度屏',
     seq: 5,
     img: 'cases_n_yl_pc_bi_sdpl017.jpg',
     url: 'https://ontest.htpsoftai.com:58500/sdpl017/index.html',
@@ -336,7 +336,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '炎雷-PC-BI-sdpl019',
+    name: '炎雷公司-广晟集团-安全生产屏',
     seq: 5,
     img: 'cases_n_yl_pc_bi_sdpl019.jpg',
     url: 'https://ontest.htpsoftai.com:58500/sdpl019/index.html',
@@ -360,7 +360,7 @@ const pageMainData = [
     seq: 22,
     img: 'cases_n_rh_pc_all_service-index.jpg',
     url: '',
-    company: 'rh',
+    company: 'lg',
     type: 'all',
     platform: 'pc',
     desc: '',
