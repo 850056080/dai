@@ -117,13 +117,23 @@
         <div v-if="section.mItems.length" class="company-section__block">
           <div class="project-row column4">
             <div v-for="item in section.mItems" :key="item.name" class="project-item project-card">
-              <img
-                :src="withBase(`img/${item.img || FALLBACK_IMG}`)"
-                :alt="item.name"
-                class="project-image"
-                loading="lazy"
-                @click="openProjectModal(item)"
-              />
+              <div class="project-image-wrapper">
+                <img
+                  :src="withBase(`img/${item.img || FALLBACK_IMG}`)"
+                  :alt="item.name"
+                  class="project-image"
+                  loading="lazy"
+                  @click="openProjectModal(item)"
+                />
+                <div v-if="item.hover" class="project-hover-overlay" @click="openProjectModal(item)">
+                  <img
+                    :src="withBase(`img/${item.hover}`)"
+                    :alt="`${item.name} 二维码`"
+                    class="project-hover-qrcode"
+                  />
+                  <span class="project-hover-tip">点击查看大图</span>
+                </div>
+              </div>
               <span class="project-label">
                 <a
                   v-if="item.url"
@@ -160,7 +170,15 @@
           </button>
         </div>
         <img class="img-modal__img" :src="currentProjectImg" :alt="currentProject?.name" />
-        <div v-if="currentProject?.desc" class="project-modal__desc">{{ currentProject.desc }}</div>
+        <div v-if="currentProject?.desc?.length" class="img-modal__desc-images">
+          <img
+            v-for="(descImg, index) in currentProject.desc"
+            :key="index"
+            class="img-modal__desc-img"
+            :src="withBase(`img/${descImg}`)"
+            :alt="`${currentProject.name} 详情图${index + 1}`"
+          />
+        </div>
         <div class="project-modal__actions">
           <a
             v-if="currentProject?.url"
@@ -382,7 +400,7 @@ const pageMainData = [
     company: 'yl',
     type: 'h5',
     platform: 'm',
-    desc: '',
+    desc: ''
   },
   {
     name: '炎雷公司-诚就智库-自定义海报',
@@ -392,7 +410,7 @@ const pageMainData = [
     company: 'yl',
     type: 'h5',
     platform: 'm',
-    desc: '',
+    desc: ''
   },
   {
     name: '临港集团-上海火车站排队预警屏',
@@ -402,7 +420,7 @@ const pageMainData = [
     company: 'lg',
     type: 'bi',
     platform: 'pc',
-    desc: '',
+    desc: ''
   },
   {
     name: '临港集团-上海教委',
@@ -412,7 +430,7 @@ const pageMainData = [
     company: 'lg',
     type: 'all',
     platform: 'pc',
-    desc: '',
+    desc: ''
   },
   {
     name: '临港集团-上海海洋大学',
@@ -422,7 +440,17 @@ const pageMainData = [
     company: 'lg',
     type: 'all',
     platform: 'pc',
-    desc: '',
+    desc: ''
+  },
+    {
+    name: '临港集团-蓝本物业管理系统',
+    seq: 41,
+    img: 'cases_n_lg_m_wuye1.jpg',
+    url: '',
+    company: 'lg',
+    type: 'all',
+    platform: 'm',
+    desc: 'cases_n_lg_pc_all_lanben_xq.jpg,cases_n_lg_pc_all_lanben_xq2.jpg,cases_n_lg_pc_all_lanben_xq3.jpg'
   },
   {
     name: '仁海公司-传恒羽毛球比赛预约系统',
@@ -432,10 +460,10 @@ const pageMainData = [
     company: 'rh',
     type: 'all',
     platform: 'pc',
-    desc: '',
+    desc: ''
   },
   {
-    name: '仁海-巴斯夫官网',
+    name: '仁海公司-巴斯夫官网',
     seq: 52,
     img: 'cases_n_rh_pc_all_l10.jpg',
     url: 'https://www.basf.com/cn/zh',
@@ -445,7 +473,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '',
+    name: '仁海公司-传恒体育排课系统',
     seq: 53,
     img: 'cases_n_rh_pc_all_l2.jpg',
     url: '',
@@ -455,7 +483,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '',
+    name: '仁海公司-传恒不良资产管理系统',
     seq: 54,
     img: 'cases_n_rh_pc_all_l3.jpg',
     url: '',
@@ -465,7 +493,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '',
+    name: '仁海公司-传恒房产管理系统',
     seq: 55,
     img: 'cases_n_rh_pc_all_l4.jpg',
     url: '',
@@ -485,7 +513,7 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '仁海-传恒房产拍卖小程序',
+    name: '仁海公司-朱莉珠宝工厂派单系统',
     seq: 57,
     img: 'cases_n_rh_pc_all_l7.jpg',
     url: '',
@@ -495,27 +523,27 @@ const pageMainData = [
     desc: '',
   },
   {
-    name: '',
+    name: '仁海公司-旭洁威特erp数据中台',
     seq: 58,
     img: 'cases_n_rh_pc_all_l8.jpg',
     url: '',
     company: 'rh',
     type: 'all',
     platform: 'pc',
-    desc: '',
+    desc: ''
   },
   {
-    name: '仁海-匠智堂书画艺术品拍卖小程序',
+    name: '仁海公司-乐塑Lesu官网',
     seq: 59,
     img: 'cases_n_rh_pc_all_l9.jpg',
     url: 'https://www.lesu3d.com/',
     company: 'rh',
     type: 'all',
     platform: 'pc',
-    desc: '',
+    desc: ''
   },
   {
-    name: '仁海-传恒羽毛球课程预约系统',
+    name: '仁海公司-传恒活动报名系统',
     seq: 61,
     img: 'cases_n_rh_m_all_l11.jpg',
     url: '',
@@ -523,59 +551,64 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_ch1.png"
   },
   {
-    name: '',
+    name: '仁海公司-传恒房产拍卖小程序',
     seq: 62,
-    img: 'cases_n_rh_m_all_l6.jpg',
-    url: '',
-    company: 'rh',
-    type: 'all',
-    platform: 'm',
-    desc: '',
-  },
-  {
-    name: '仁海-传恒课程预约小程序',
-    seq: 63,
-    img: 'cases_n_rh_m_all_wechatimg327.jpg',
-    url: '',
-    company: 'rh',
-    type: 'all',
-    platform: 'm',
-    desc: '',
-  },
-  {
-    name: '',
-    seq: 64,
-    img: 'cases_n_rh_m_all_wechatimg328.jpg',
-    url: '',
-    company: 'rh',
-    type: 'all',
-    platform: 'm',
-    desc: '',
-  },
-  {
-    name: '仁海-湘南校友会',
-    seq: 65,
     img: 'cases_n_rh_m_all_wechatimg329.jpg',
     url: '',
     company: 'rh',
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_ch2.png"
   },
   {
-    name: '仁海-品家甄选-社区家装小程序',
-    seq: 66,
+    name: '仁海公司-传恒课程预约小程序',
+    seq: 63,
     img: 'cases_n_rh_m_all_wechatimg330.jpg',
     url: '',
     company: 'rh',
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_ch2.png"
   },
   {
-    name: '仁海-中外甄选-牛排礼盒商城小程序',
+    name: '仁海公司-匠智堂书画艺术品拍卖小程序',
+    seq: 64,
+    img: 'cases_n_rh_m_all_l6.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: ''
+  },
+  {
+    name: '仁海公司-湘南校友会',
+    seq: 65,
+    img: 'cases_n_rh_m_all_wechatimg327.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+    hover: "cases_n_rh_hover_qrcode_xn.png"
+  },
+  {
+    name: '仁海公司-品家甄选-社区家装小程序',
+    seq: 66,
+    img: 'cases_n_rh_m_all_wechatimg328.jpg',
+    url: '',
+    company: 'rh',
+    type: 'all',
+    platform: 'm',
+    desc: '',
+    hover: "cases_n_rh_hover_qrcode_pj.png"
+  },
+  {
+    name: '仁海公司-中外甄选-牛排礼盒商城小程序',
     seq: 67,
     img: 'cases_n_rh_m_all_wechatimg331.jpg',
     url: '',
@@ -583,9 +616,10 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_zwzx.png"
   },
   {
-    name: '仁海-上海建工-温度监测小程序',
+    name: '仁海公司-上海建工-温度监测小程序',
     seq: 68,
     img: 'cases_n_rh_m_all_wechatimg332.jpg',
     url: '',
@@ -593,9 +627,10 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_shjg.png"
   },
   {
-    name: '仁海-玄马-创业者俱乐部-活动路演',
+    name: '仁海公司-玄马-创业者俱乐部-活动路演',
     seq: 69,
     img: 'cases_n_rh_m_all_wechatimg333.jpg',
     url: '',
@@ -603,9 +638,10 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_xm.png"
   },
   {
-    name: '仁海-美沃测评小程序',
+    name: '仁海公司-美沃测评小程序',
     seq: 70,
     img: 'cases_n_rh_m_all_wechatimg334.jpg',
     url: '',
@@ -613,9 +649,10 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_mw.png"
   },
   {
-    name: '仁海-爱在路上公益小程序',
+    name: '仁海公司-爱在路上公益小程序',
     seq: 71,
     img: 'cases_n_rh_m_all_wechatimg335.jpg',
     url: '',
@@ -623,9 +660,10 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_azls1.png"
   },
   {
-    name: '仁海-爱在路上公益捐赠小程序',
+    name: '仁海公司-爱在路上公益捐赠小程序',
     seq: 72,
     img: 'cases_n_rh_m_all_wechatimg336.jpg',
     url: '',
@@ -633,9 +671,10 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_azls2.png"
   },
   {
-    name: '仁海-富士胶片-故障排查小程序',
+    name: '仁海公司-富士胶片-故障排查小程序',
     seq: 73,
     img: 'cases_n_rh_m_all_wechatimg337.jpg',
     url: '',
@@ -643,6 +682,7 @@ const pageMainData = [
     type: 'all',
     platform: 'm',
     desc: '',
+    hover: "cases_n_rh_hover_qrcode_sbs.png"
   }
 ]
 
@@ -656,9 +696,13 @@ const normalizedData = computed(() => {
     // platform 必须用于布局分组：只允许 pc/m，不合法则默认 pc
     const platform = raw?.platform === 'm' ? 'm' : 'pc'
     const url = String(raw?.url || '').trim()
-    const desc = String(raw?.desc || '').trim()
+    const hover = String(raw?.hover || '').trim()
+    
+    // 解析 desc 为图片数组（支持逗号分隔的多图）
+    const descStr = String(raw?.desc || '').trim()
+    const desc = descStr ? descStr.split(',').map(s => s.trim()).filter(s => s) : []
 
-    return { name, seq, img, url, company, type, platform, desc }
+    return { name, seq, img, url, company, type, platform, desc, hover }
   })
 })
 
@@ -1161,6 +1205,7 @@ onBeforeUnmount(() => {
 .img-modal__content {
   width: min(1200px, 100%);
   max-height: calc(100vh - 90px);
+  max-height: calc(100dvh - 90px);
   position: relative;
   background: #fff;
   border-radius: 12px;
@@ -1168,12 +1213,28 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
 }
 
 .img-modal__img {
   width: 100%;
-  height: 100%;
-  max-height: calc(100vh - 140px);
+  height: auto;
+  max-height: calc(70vh - 100px);
+  object-fit: contain;
+  border-radius: 10px;
+  background: #f3f4f6;
+}
+
+.img-modal__desc-images {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.img-modal__desc-img {
+  width: 100%;
+  height: auto;
+  max-height: calc(70vh - 100px);
   object-fit: contain;
   border-radius: 10px;
   background: #f3f4f6;
@@ -1368,6 +1429,61 @@ onBeforeUnmount(() => {
   border-radius: 8px;
 }
 
+.project-image-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.project-hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.project-item:hover .project-hover-overlay {
+  opacity: 1;
+}
+
+.project-hover-qrcode {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px;
+}
+
+.project-hover-tip {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .project-hover-overlay {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
 @media (max-width: 768px) {
   .app-icon {
     width: 96px;
@@ -1378,6 +1494,11 @@ onBeforeUnmount(() => {
   .project-label {
     padding: 10px 12px;
     font-size: 13px;
+  }
+
+  .project-hover-qrcode {
+    width: 120px;
+    height: 120px;
   }
 }
 </style>
