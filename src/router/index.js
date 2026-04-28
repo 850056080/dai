@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import ResumePage from '../pages/ResumePage.vue'
-import CasesPage from '../pages/CasesPage.vue'
+import CasesPage from '../pages/CasesPage/CasesPage.vue'
 import DownloadPage from '../pages/DownloadPage.vue'
 import BodyWebPage from '../pages/BodyWebPage.vue'
 import SoftwarePage from '../pages/SoftwarePage.vue'
