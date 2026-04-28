@@ -22,12 +22,17 @@
 ```text
 .
 ├─ public/                 # 纯静态资源（构建时原样拷贝）
-│  ├─ img/                 # 图片资源（案例图/头像等）
+│  ├─ img/                 # 图片资源（案例图/头像/二维码等）
 │  ├─ resume.pdf           # 简历 PDF（供下载页预览/下载）
 │  └─ resume.docx          # 简历 Word（供在线预览/下载）
 ├─ src/
 │  ├─ components/          # 通用组件（Header）
 │  ├─ pages/               # 路由页面
+│  │  └─ CasesPage/        # 项目案例页组件拆分
+│  │     ├─ CasesPage.vue  # 模板
+│  │     ├─ CasesPage.js   # 逻辑（组合式函数）
+│  │     ├─ CasesPage.css  # 样式
+│  │     └─ CasesPage.json # 数据
 │  ├─ router/              # 路由配置
 │  └─ main.js              # 应用启动
 ├─ index.html
@@ -39,6 +44,7 @@
 
 - `dist/`、`docs/` 为构建产物目录，已在 [.gitignore](file:///Users/albertdominic/Documents/yl/dai-main/.gitignore) 中忽略，不应提交到仓库。
 - 线上部署由 GitHub Actions 在服务器端构建并发布，不依赖本地提交构建产物。
+- 项目案例页采用组件化拆分，模板、逻辑、样式、数据分离，便于维护。
 
 ## 本地开发
 
@@ -110,11 +116,35 @@ npm run preview
 
 ### 项目案例（/cases）
 
-页面：[CasesPage.vue](file:///Users/albertdominic/Documents/yl/dai-main/src/pages/CasesPage.vue)
+页面：[CasesPage.vue](file:///Users/albertdominic/Documents/yl/dai-main/src/pages/CasesPage/CasesPage.vue)
 
+**功能特性**：
 - Banner/个人信息/项目展示
 - 使用 `import.meta.env.BASE_URL` 拼接资源路径，适配 GitHub Pages 的 `base` 配置（示例：`withBase('img/cases_banner.png')`）
-- 部分案例通过 iframe 嵌入外部页面（需要目标站点允许被 iframe 引用）
+- **项目筛选**：按公司、平台（PC/移动端）、类型筛选
+- **显示宽度控制**：支持 `showwidth` 属性控制展示宽度
+  - `entire`：100% 宽度（单列）
+  - `half`：50% 宽度（双列）
+  - `quarter`：25% 宽度（四列）
+- **二维码悬浮**：移动端项目支持 `hover` 属性配置二维码，鼠标悬停显示扫码入口
+- **弹窗展示**：点击项目图片打开弹窗，支持多图详情展示（`desc` 属性支持逗号分隔多图）
+- **响应式设计**：PC/移动端自适应布局
+
+**数据结构**（[CasesPage.json](file:///Users/albertdominic/Documents/yl/dai-main/src/pages/CasesPage/CasesPage.json)）：
+```json
+{
+  "name": "项目名称",
+  "seq": 11,
+  "img": "cases_xxx.jpg",
+  "url": "https://example.com",
+  "company": "yl",
+  "type": "sys",
+  "platform": "pc",
+  "showwidth": "half",
+  "desc": "detail1.jpg,detail2.jpg",
+  "hover": "qrcode.png"
+}
+```
 
 ### 简历下载（/download）
 
